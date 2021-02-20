@@ -106,7 +106,7 @@ namespace moe::aoramd::kaleidoscope::internal {
          *
          * @return true if initialize successfully.
          */
-        static bool Initialize();
+        static bool Initialize(JNIEnv *env);
 
         /**
          * Get java class global reference by class name.
@@ -116,6 +116,15 @@ namespace moe::aoramd::kaleidoscope::internal {
          * @return class global reference.
          */
         static jclass GetClassGlobalReference(JNIEnv *env, const char *class_name);
+
+        /**
+         * Get runtime method reference from java object of java.lang.reflect.Method.
+         *
+         * @param env JNI environment.
+         * @param reflect_method object of java.lang.reflect.Method.
+         * @return corresponding runtime method.
+         */
+        static mirror::Method *GetRuntimeMethodFromReflectMethod(JNIEnv *env, jobject reflect_method);
 
         /**
          * Get jobject from mirror::Object.
@@ -128,7 +137,13 @@ namespace moe::aoramd::kaleidoscope::internal {
         static jobject GetObject(JNIEnv *env, mirror::Thread *thread, mirror::Object *object);
 
     private:
+        static mirror::Method *GetRuntimeMethodFromReflectMethodOnR(JNIEnv *env, jobject reflect_method);
+
+        static jclass jvm_executable_class_;
+
         static void *function_add_weak_global_reference_;
+
+        static constexpr const char *JVM_EXECUTABLE_CLASS_NAME = "java/lang/reflect/Executable";
 
         static constexpr const char *FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_L =
                 "_ZN3art9JavaVMExt22AddWeakGlobalReferenceEPNS_6ThreadEPNS_6mirror6ObjectE";

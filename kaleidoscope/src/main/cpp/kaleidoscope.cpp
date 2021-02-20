@@ -55,7 +55,7 @@ Java_moe_aoramd_kaleidoscope_internal_RuntimeKt_initializeNativeInternal(JNIEnv 
     }
 
     // Initialize JVM related.
-    if (!internal::Jni::Initialize()) {
+    if (!internal::Jni::Initialize(env)) {
         errorLog("Initialize JVM tool failed.")
         return false;
     }
@@ -67,8 +67,12 @@ Java_moe_aoramd_kaleidoscope_internal_RuntimeKt_initializeNativeInternal(JNIEnv 
     }
 
     // Initialize runtime method related.
+    mirror::Method *standard_runtime_method =
+            internal::Jni::GetRuntimeMethodFromReflectMethod(env, standard_method);
+    mirror::Method *relative_runtime_method =
+            internal::Jni::GetRuntimeMethodFromReflectMethod(env, relative_method);
     if (!mirror::Method::Initialize(env, reinterpret_cast<mirror::Thread *>(current_thread),
-                                    standard_method, relative_method)) {
+                                    standard_runtime_method, relative_runtime_method)) {
         errorLog("Initialize runtime method failed.")
         return false;
     }
@@ -84,7 +88,7 @@ Java_moe_aoramd_kaleidoscope_internal_RuntimeKt_registerBridgeMethod(JNIEnv *env
                                                                      jobject bridge_method) {
     runtime::Runtime::RegisterBridgeMethod(
             key, reinterpret_cast<mirror::Thread *>(current_thread),
-            mirror::Method::GetFromReflectMethod(env, bridge_method));
+            internal::Jni::GetRuntimeMethodFromReflectMethod(env, bridge_method));
 }
 
 extern "C"
@@ -93,7 +97,7 @@ Java_moe_aoramd_kaleidoscope_internal_RuntimeKt_listenBridgeNative(JNIEnv *env, 
                                                                    jobject method,
                                                                    jlong current_thread,
                                                                    jint bridge_type_key) {
-    mirror::Method *runtime_method = mirror::Method::GetFromReflectMethod(env, method);
+    mirror::Method *runtime_method = internal::Jni::GetRuntimeMethodFromReflectMethod(env, method);
     runtime::ListenResult *result =
             runtime::Runtime::ListenBridge(runtime_method,
                                            reinterpret_cast<mirror::Thread *>(current_thread),
@@ -108,7 +112,7 @@ Java_moe_aoramd_kaleidoscope_internal_RuntimeKt_replaceBridgeNative(JNIEnv *env,
                                                                     jobject method,
                                                                     jlong current_thread,
                                                                     jint bridge_type_key) {
-    mirror::Method *runtime_method = mirror::Method::GetFromReflectMethod(env, method);
+    mirror::Method *runtime_method = internal::Jni::GetRuntimeMethodFromReflectMethod(env, method);
     runtime::ReplaceResult *result =
             runtime::Runtime::ReplaceBridge(runtime_method,
                                             reinterpret_cast<mirror::Thread *>(current_thread),

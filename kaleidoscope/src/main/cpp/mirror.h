@@ -64,22 +64,13 @@ namespace moe::aoramd::kaleidoscope::mirror {
          */
         static bool Initialize(JNIEnv *env,
                                Thread *current_thread,
-                               jobject standard_method,
-                               jobject relative_method);
+                               Method *standard_method,
+                               Method *relative_method);
 
         /**
          * Set access flag private.
          */
         void SetPrivate();
-
-        /**
-         * Get runtime method reference from java object of java.lang.reflect.Method.
-         *
-         * @param env JNI environment.
-         * @param reflect_method object of java.lang.reflect.Method.
-         * @return corresponding runtime method.
-         */
-        static Method *GetFromReflectMethod(JNIEnv *env, jobject reflect_method);
 
         /**
          * Get size of runtime method object.
@@ -112,17 +103,11 @@ namespace moe::aoramd::kaleidoscope::mirror {
          */
         bool Compile(Thread *current_thread);
 
-        static Method *
-        GetFromReflectMethodOnR(JNIEnv *env, jobject reflect_method);
-
-        static jclass jvm_executable_class_;
         static Compiler *compiler_;
         static int runtime_method_size_;
         static int entry_point_for_quick_compiled_code_offset_;
         static int access_flag_offset_;
         static void *entry_point_for_jit_compile_;
-
-        static constexpr const char *JVM_EXECUTABLE_CLASS_NAME = "java/lang/reflect/Executable";
 
         /**
          * Type of access flags in art::ArtMethod is std::atomic<std::uint32_t>.

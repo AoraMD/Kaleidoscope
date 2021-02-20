@@ -78,9 +78,34 @@ namespace moe::aoramd::kaleidoscope::internal {
         else return dlsym(handle, symbol);
     }
 
+    bool Memory::Unprotect(void *start, std::size_t size) {
+        std::size_t page_size = sysconf(_SC_PAGESIZE);
+        std::size_t alignment = reinterpret_cast<std::size_t>(start) % page_size;
+        return mprotect(
+                reinterpret_cast<void *>(reinterpret_cast<std::size_t>(start) - alignment),
+                size + alignment, PROT_READ | PROT_WRITE | PROT_EXEC) == 0;
+    }
+
+    void Memory::Copy(void *destination, void *source, std::size_t size) {
+        memcpy(destination, source, size);
+    }
+
+    jclass Jni::jvm_executable_class_ = nullptr;
+
     void *Jni::function_add_weak_global_reference_ = nullptr;
 
-    bool Jni::Initialize() {
+    bool Jni::Initialize(JNIEnv *env) {
+        // Initialize Java class references for Android 11.
+        if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kR, true)) {
+            jvm_executable_class_ =
+                    internal::Jni::GetClassGlobalReference(env, JVM_EXECUTABLE_CLASS_NAME);
+            if (env->ExceptionCheck()) env->ExceptionClear();
+            if (jvm_executable_class_ == nullptr) {
+                errorLog("Cannot find class java.lang.reflect.Executable in runtime.")
+                return false;
+            }
+        }
+
         if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kOreo, true)) {
             function_add_weak_global_reference_ =
                     Library::SymbolInArtLibrary(FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_AND_ABOVE_O);
@@ -95,18 +120,6 @@ namespace moe::aoramd::kaleidoscope::internal {
         return true;
     }
 
-    bool Memory::Unprotect(void *start, std::size_t size) {
-        std::size_t page_size = sysconf(_SC_PAGESIZE);
-        std::size_t alignment = reinterpret_cast<std::size_t>(start) % page_size;
-        return mprotect(
-                reinterpret_cast<void *>(reinterpret_cast<std::size_t>(start) - alignment),
-                size + alignment, PROT_READ | PROT_WRITE | PROT_EXEC) == 0;
-    }
-
-    void Memory::Copy(void *destination, void *source, std::size_t size) {
-        memcpy(destination, source, size);
-    }
-
     jclass Jni::GetClassGlobalReference(JNIEnv *env, const char *class_name) {
         jclass class_local = env->FindClass(class_name);
         if (env->ExceptionCheck()) env->ExceptionClear();
@@ -114,6 +127,14 @@ namespace moe::aoramd::kaleidoscope::internal {
         auto result = reinterpret_cast<jclass>(env->NewGlobalRef(class_local));
         env->DeleteLocalRef(class_local);
         return result;
+    }
+
+    mirror::Method *Jni::GetRuntimeMethodFromReflectMethod(JNIEnv *env, jobject reflect_method) {
+        if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kR, true)) {
+            return GetRuntimeMethodFromReflectMethodOnR(env, reflect_method);
+        }
+        jmethodID reflect_method_id = env->FromReflectedMethod(reflect_method);
+        return reinterpret_cast<mirror::Method *>(reflect_method_id);
     }
 
     jobject Jni::GetObject(JNIEnv *env, mirror::Thread *thread, mirror::Object *object) {
@@ -125,5 +146,19 @@ namespace moe::aoramd::kaleidoscope::internal {
         env->GetJavaVM(&java_vm);
         return reinterpret_cast<jobject (*)(JavaVM *, mirror::Thread *, mirror::Object *)>(
                 function_add_weak_global_reference_)(java_vm, thread, object);
+    }
+
+    mirror::Method *Jni::GetRuntimeMethodFromReflectMethodOnR(JNIEnv *env, jobject reflect_method) {
+        if (jvm_executable_class_ == nullptr) {
+            errorLog("Cannot find class java.lang.reflect.Executable.")
+            return nullptr;
+        }
+        jfieldID art_method_field_id = env->GetFieldID(jvm_executable_class_, "artMethod", "J");
+        if (UNLIKELY(!art_method_field_id)) {
+            errorLog("Cannot find field artMethod in class java.lang.reflect.Executable.")
+            return nullptr;
+        }
+        jlong art_method_pointer = env->GetLongField(reflect_method, art_method_field_id);
+        return reinterpret_cast<mirror::Method *>(art_method_pointer);
     }
 }

@@ -34,7 +34,6 @@
 
 namespace moe::aoramd::kaleidoscope::mirror {
 
-    jclass Method::jvm_executable_class_ = nullptr;
     Compiler *Method::compiler_ = nullptr;
     int Method::runtime_method_size_ = -1;
     int Method::entry_point_for_quick_compiled_code_offset_ = -1;
@@ -82,25 +81,14 @@ namespace moe::aoramd::kaleidoscope::mirror {
         }
 
         friend bool Method::Initialize(JNIEnv *env, Thread *current_thread,
-                                       jobject standard_method,
-                                       jobject relative_method);
+                                       Method *standard_method,
+                                       Method *relative_method);
     };
 
     bool Method::Initialize(JNIEnv *env,
                             Thread *current_thread,
-                            jobject standard_method,
-                            jobject relative_method) {
-
-        // Initialize Java class references for Android 11.
-        if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kR, true)) {
-            jvm_executable_class_ =
-                    internal::Jni::GetClassGlobalReference(env, JVM_EXECUTABLE_CLASS_NAME);
-            if (env->ExceptionCheck()) env->ExceptionClear();
-            if (jvm_executable_class_ == nullptr) {
-                errorLog("Cannot find class java.lang.reflect.Executable in runtime.")
-                return false;
-            }
-        }
+                            Method *standard_method,
+                            Method *relative_method) {
 
         // Initialize method compile entrances.
         if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kR, true)) {
@@ -118,11 +106,10 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
         // Calculate runtime method size.
 
-        Method *standard_runtime_method = GetFromReflectMethod(env, standard_method);
         auto standard_address =
-                reinterpret_cast<std::size_t>(standard_runtime_method);
+                reinterpret_cast<std::size_t>(standard_method);
         auto relative_address =
-                reinterpret_cast<std::size_t>(GetFromReflectMethod(env, relative_method));
+                reinterpret_cast<std::size_t>(relative_method);
         // In current test environments (include x86_64 and arm64), relative_method is less than standard_method.
         // However, according to debugging result from LLDB, two standard_method objects are indeed adjacent.
         // TODO: Find out why relative_method is less than standard_method.
@@ -160,12 +147,12 @@ namespace moe::aoramd::kaleidoscope::mirror {
             entry_point_for_jit_compile_ = nullptr;
         } else {
             void *entry_point_before_compile =
-                    standard_runtime_method->GetEntryPointFromQuickCompiledCode();
+                    standard_method->GetEntryPointFromQuickCompiledCode();
             // Use CompileInternal() instead of Compile() to skip the compilation check,
             // because the data related to the compilation check has not been initialized.
-            standard_runtime_method->Compile(current_thread);
+            standard_method->Compile(current_thread);
             void *entry_point_after_compile =
-                    standard_runtime_method->GetEntryPointFromQuickCompiledCode();
+                    standard_method->GetEntryPointFromQuickCompiledCode();
             if (entry_point_before_compile != entry_point_after_compile) {
                 entry_point_for_jit_compile_ = entry_point_before_compile;
                 debugLog("Entry point for JNI compile is set to 0x%016lx",
@@ -183,15 +170,6 @@ namespace moe::aoramd::kaleidoscope::mirror {
     void Method::SetPrivate() {
         auto *pointer = reinterpret_cast<std::uint32_t *>(this + access_flag_offset_);
         *pointer = *pointer & ~ACCESS_FLAG_PUBLIC_MASK | ACCESS_FLAG_PRIVATE_MASK;
-    }
-
-    Method *
-    Method::GetFromReflectMethod(JNIEnv *env, jobject reflect_method) {
-        if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kR, true)) {
-            return GetFromReflectMethodOnR(env, reflect_method);
-        }
-        jmethodID reflect_method_id = env->FromReflectedMethod(reflect_method);
-        return reinterpret_cast<Method *>(reflect_method_id);
     }
 
     std::string Method::GetDataHexString() {
@@ -225,20 +203,6 @@ namespace moe::aoramd::kaleidoscope::mirror {
                  reinterpret_cast<std::size_t>(this),
                  reinterpret_cast<std::size_t>(GetEntryPointFromQuickCompiledCode()))
         return result;
-    }
-
-    Method *Method::GetFromReflectMethodOnR(JNIEnv *env, jobject reflect_method) {
-        if (jvm_executable_class_ == nullptr) {
-            errorLog("Cannot find class java.lang.reflect.Executable.")
-            return nullptr;
-        }
-        jfieldID art_method_field_id = env->GetFieldID(jvm_executable_class_, "artMethod", "J");
-        if (UNLIKELY(!art_method_field_id)) {
-            errorLog("Cannot find field artMethod in class java.lang.reflect.Executable.")
-            return nullptr;
-        }
-        jlong art_method_pointer = env->GetLongField(reflect_method, art_method_field_id);
-        return reinterpret_cast<Method *>(art_method_pointer);
     }
 
     void *Compiler::function_compile_method_ = nullptr;
