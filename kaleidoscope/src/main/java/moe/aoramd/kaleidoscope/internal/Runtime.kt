@@ -49,14 +49,17 @@ private external fun initializeNativeInternal(
     relativeMethod: Method
 ): Boolean
 
+private val threadNativePeerField by lazy {
+    Thread::class.java.getDeclaredField("nativePeer").apply {
+        isAccessible = true
+    }
+}
+
 /**
  * Get current thread native peer.
  */
 internal val currentThreadNativePeer: Long
-    get() = Thread::class.java.getDeclaredField("nativePeer").run {
-        isAccessible = true
-        getLong(Thread.currentThread())
-    }
+    get() = threadNativePeerField.getLong(Thread.currentThread())
 
 /**
  * Register method as a bridge method in runtime.

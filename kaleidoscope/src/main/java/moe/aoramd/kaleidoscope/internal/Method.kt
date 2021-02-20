@@ -52,35 +52,40 @@ internal fun Method.forceLoad() {
     }
 }
 
+@delegate:SuppressLint("SoonBlockedPrivateApi")
+private val internalCloneMethod by lazy {
+    Object::class.java.getDeclaredMethod("internalClone").apply {
+        isAccessible = true
+    }
+}
+
+private val artMethodField by lazy {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Class.forName("java.lang.reflect.Executable")
+            .getDeclaredField("artMethod").apply {
+                isAccessible = true
+            }
+    } else {
+        Class.forName("java.lang.reflect.AbstractMethod")
+            .getDeclaredField("artMethod").apply {
+                isAccessible = true
+            }
+    }
+}
+
 /**
  * Clone the java.lang.reflect.Method object and replace its runtime method pointer with [runtimeMethod].
  */
 internal fun Method.runtimeClone(runtimeMethod: RuntimeMethod): Method {
     val clone: Method
     try {
-        @SuppressLint("SoonBlockedPrivateApi")
-        clone = Object::class.java.getDeclaredMethod("internalClone").run {
-            isAccessible = true
-            invoke(this) as Method
-        }
+        clone = internalCloneMethod.invoke(this) as Method
     } catch (exception: RuntimeException) {
         exception.debugTrace()
         throw MethodCloneException(this)
     }
     try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Class.forName("java.lang.reflect.Executable")
-                .getDeclaredField("artMethod").apply {
-                    isAccessible = true
-                    set(clone, runtimeMethod.nativePeer)
-                }
-        } else {
-            Class.forName("java.lang.reflect.AbstractMethod")
-                .getDeclaredField("artMethod").apply {
-                    isAccessible = true
-                    set(clone, runtimeMethod.nativePeer)
-                }
-        }
+        artMethodField.set(clone, runtimeMethod.nativePeer)
     } catch (exception: Exception) {
         exception.debugTrace()
         throw ReplaceRuntimeMethodAddressErrorException(this)
