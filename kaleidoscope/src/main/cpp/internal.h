@@ -86,7 +86,7 @@ namespace moe::aoramd::kaleidoscope::internal {
          *        memory page alignment.
          * @return 0 on success or -1 on failure.
          */
-        static bool Unprotect(void *start, std::uint64_t size);
+        static bool Unprotect(void *start, std::size_t size);
 
         /**
          * Copies the values of num bytes from the location pointed to by source directly
@@ -96,7 +96,7 @@ namespace moe::aoramd::kaleidoscope::internal {
          * @param source pointer to the source of data to be copied.
          * @param size number of bytes to copy.
          */
-        static void Copy(void *destination, void *source, size_t size);
+        static void Copy(void *destination, void *source, std::size_t size);
     };
 
     class Jni final {

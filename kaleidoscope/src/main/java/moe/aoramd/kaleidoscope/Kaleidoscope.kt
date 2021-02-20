@@ -84,9 +84,7 @@ fun Context.initializeKaleidoscope(logLevel: LogLevel = LogLevel.ERROR): Boolean
     }
 
     // Register bridge methods.
-    for (type in BridgeType.values()) {
-        type.bridgeMethod.registerAsBridge(type.key)
-    }
+    Bridge.loadAll()
 
     currentState = State.SUCCESS
     return true

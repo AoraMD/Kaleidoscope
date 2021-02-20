@@ -43,13 +43,13 @@ namespace moe::aoramd::kaleidoscope::runtime {
         /**
          * A spin lock used to ensure concurrency safety.
          */
-        [[maybe_unused]] std::uint64_t lock_ = 0;
+        [[maybe_unused]] std::size_t lock_ = 0;
 
     public:
         /**
          * sp register data.
          */
-        std::uint64_t sp_pointer_;
+        std::size_t sp_pointer_;
 
         /**
          * The pointer of callee runtime method.

@@ -124,6 +124,9 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
         static constexpr const char *JVM_EXECUTABLE_CLASS_NAME = "java/lang/reflect/Executable";
 
+        /**
+         * Type of access flags in art::ArtMethod is std::atomic<std::uint32_t>.
+         */
         static const std::uint32_t ACCESS_FLAG_PUBLIC_MASK = 0b01;
         static const std::uint32_t ACCESS_FLAG_PRIVATE_MASK = 0b10;
     };

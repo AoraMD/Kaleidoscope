@@ -44,7 +44,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
     template<typename T>
     ALWAYS_INLINE int find_offset(void *start, T target, int range) {
         for (int i = 0; i < range; i++) {
-            auto current = reinterpret_cast<T *>(reinterpret_cast<std::uint64_t>(start) + i);
+            auto current = reinterpret_cast<T *>(reinterpret_cast<std::size_t>(start) + i);
             if (*current == target) return i;
         }
         return -1;
@@ -58,19 +58,6 @@ namespace moe::aoramd::kaleidoscope::mirror {
      */
     class AndroidRuntimeOnR final {
     private:
-        [[maybe_unused]] void *unused_0_;
-        [[maybe_unused]] void *unused_1_;
-        [[maybe_unused]] void *unused_2_;
-        [[maybe_unused]] void *unused_3_;
-        [[maybe_unused]] void *unused_4_;
-        [[maybe_unused]] size_t unused_5_;
-        [[maybe_unused]] void *unused_6_;
-        [[maybe_unused]] void *unused_7_;
-        [[maybe_unused]] void *unused_8_;
-        [[maybe_unused]] void *unused_9_;
-        [[maybe_unused]] void *unused_10_;
-        [[maybe_unused]] void *unused_11_;
-        [[maybe_unused]] void *unused_12_;
         [[maybe_unused]] void *java_vm_;
         [[maybe_unused]] void *unused_13_;
 
@@ -91,8 +78,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
             int runtime_offset = find_offset(mirror_java_vm->runtime, java_vm, 2000);
             return reinterpret_cast<AndroidRuntimeOnR *>(
                     reinterpret_cast<char *>(mirror_java_vm->runtime) +
-                    runtime_offset -
-                    offsetof(AndroidRuntimeOnR, java_vm_));
+                    runtime_offset - offsetof(AndroidRuntimeOnR, java_vm_));
         }
 
         friend bool Method::Initialize(JNIEnv *env, Thread *current_thread,
@@ -134,13 +120,13 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
         Method *standard_runtime_method = GetFromReflectMethod(env, standard_method);
         auto standard_address =
-                reinterpret_cast<std::uint64_t>(standard_runtime_method);
+                reinterpret_cast<std::size_t>(standard_runtime_method);
         auto relative_address =
-                reinterpret_cast<std::uint64_t>(GetFromReflectMethod(env, relative_method));
+                reinterpret_cast<std::size_t>(GetFromReflectMethod(env, relative_method));
         // In current test environments (include x86_64 and arm64), relative_method is less than standard_method.
         // However, according to debugging result from LLDB, two standard_method objects are indeed adjacent.
         // TODO: Find out why relative_method is less than standard_method.
-        std::uint64_t size =
+        std::size_t size =
                 relative_address > standard_address ?
                 relative_address - standard_address : standard_address - relative_address;
         runtime_method_size_ = static_cast<int>(size);
@@ -183,7 +169,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
             if (entry_point_before_compile != entry_point_after_compile) {
                 entry_point_for_jit_compile_ = entry_point_before_compile;
                 debugLog("Entry point for JNI compile is set to 0x%016lx",
-                         reinterpret_cast<std::uint64_t>(entry_point_for_jit_compile_))
+                         reinterpret_cast<std::size_t>(entry_point_for_jit_compile_))
             } else {
                 errorLog("The standard method is already compiled before used.")
                 entry_point_for_jit_compile_ = nullptr;
@@ -209,10 +195,10 @@ namespace moe::aoramd::kaleidoscope::mirror {
     }
 
     std::string Method::GetDataHexString() {
-        auto base = reinterpret_cast<std::uint64_t>(this);
+        auto base = reinterpret_cast<std::size_t>(this);
         std::string data = "[";
         char buffer[11];
-        for (std::uint64_t i = 0; i < runtime_method_size_; i += sizeof(std::uint32_t)) {
+        for (std::size_t i = 0; i < runtime_method_size_; i += sizeof(std::uint32_t)) {
             sprintf(buffer, "0x%08x", *reinterpret_cast<std::uint32_t *>(base + i));
             if (i != 0) data += ", ";
             data += buffer;
@@ -223,10 +209,9 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
     void *Method::GetEntryPointFromQuickCompiledCode() {
         if (UNLIKELY(entry_point_for_quick_compiled_code_offset_ < 0)) return nullptr;
-        std::uint64_t entry_point_address = *reinterpret_cast<std::uint64_t *>(
-                reinterpret_cast<std::uint64_t>(this) +
+        return *reinterpret_cast<void **>(
+                reinterpret_cast<std::size_t>(this) +
                 entry_point_for_quick_compiled_code_offset_);
-        return reinterpret_cast<void *>(entry_point_address);
     }
 
     bool Method::Compile(Thread *current_thread) {
@@ -237,8 +222,8 @@ namespace moe::aoramd::kaleidoscope::mirror {
         bool result = compiler_->Compile(this, current_thread);
         *state_and_flags = state_and_flags_backup;
         debugLog("Entry point of compiled runtime method 0x%016lx is 0x%016lx",
-                 reinterpret_cast<std::uint64_t>(this),
-                 reinterpret_cast<std::uint64_t>(GetEntryPointFromQuickCompiledCode()))
+                 reinterpret_cast<std::size_t>(this),
+                 reinterpret_cast<std::size_t>(GetEntryPointFromQuickCompiledCode()))
         return result;
     }
 

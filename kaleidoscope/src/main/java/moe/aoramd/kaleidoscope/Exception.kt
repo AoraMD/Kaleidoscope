@@ -68,3 +68,8 @@ internal class DuplicateMarkException(method: Method) :
 
 internal class RepeatInvokeRestoreException(scope: Scope) :
     RuntimeException("Function restore() of scope $scope can only be invoked once.")
+
+// Bridge
+
+internal class UnsupportedArchitectureException(architecture: String) :
+    RuntimeException("Current architecture $architecture is not yet support.")

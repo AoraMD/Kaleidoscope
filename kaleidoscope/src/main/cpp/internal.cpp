@@ -95,15 +95,15 @@ namespace moe::aoramd::kaleidoscope::internal {
         return true;
     }
 
-    bool Memory::Unprotect(void *start, std::uint64_t size) {
-        std::uint64_t page_size = sysconf(_SC_PAGESIZE);
-        std::uint64_t alignment = reinterpret_cast<std::uint64_t>(start) % page_size;
+    bool Memory::Unprotect(void *start, std::size_t size) {
+        std::size_t page_size = sysconf(_SC_PAGESIZE);
+        std::size_t alignment = reinterpret_cast<std::size_t>(start) % page_size;
         return mprotect(
-                reinterpret_cast<void *>(reinterpret_cast<std::uint64_t>(start) - alignment),
+                reinterpret_cast<void *>(reinterpret_cast<std::size_t>(start) - alignment),
                 size + alignment, PROT_READ | PROT_WRITE | PROT_EXEC) == 0;
     }
 
-    void Memory::Copy(void *destination, void *source, size_t size) {
+    void Memory::Copy(void *destination, void *source, std::size_t size) {
         memcpy(destination, source, size);
     }
 

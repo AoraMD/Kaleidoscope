@@ -24,7 +24,7 @@
 
 package moe.aoramd.kaleidoscope.internal
 
-import moe.aoramd.kaleidoscope.internal.BridgeType.Companion.toBridgeType
+import moe.aoramd.kaleidoscope.internal.Bridge.Type.Companion.toBridgeType
 import java.lang.reflect.Method
 
 /**
@@ -77,7 +77,7 @@ private external fun registerBridgeMethod(key: Int, currentThread: Long, bridgeM
 internal fun Method.listenBridge(): Pair<InsertBridgeResult, Method>? {
     val nativePeer =
         listenBridgeNative(
-            this, currentThreadNativePeer, genericReturnType.toBridgeType().key
+            this, currentThreadNativePeer, returnType.toBridgeType.key
         )
     if (nativePeer == 0L) return null
     val result = ListenResult(nativePeer)
@@ -97,7 +97,7 @@ private external fun listenBridgeNative(
 internal fun Method.replaceBridge(): InsertBridgeResult? {
     val nativePeer =
         replaceBridgeNative(
-            this, currentThreadNativePeer, genericReturnType.toBridgeType().key
+            this, currentThreadNativePeer, returnType.toBridgeType.key
         )
     return if (nativePeer == 0L) null else ReplaceResult(nativePeer)
 }
@@ -112,14 +112,13 @@ internal fun restoreBridgeNative(resultPointer: Long) = restoreBridgeNativeInter
 
 private external fun restoreBridgeNativeInternal(resultPointer: Long)
 
-internal fun invokeBridge(
-    currentThread: Long,
-    mainBox: Long,
-    x3: Long,
-    x4: Long,
-    x5: Long,
-    x6: Long,
-    x7: Long
+internal fun invokeBridge32(
+    currentThread: Long, mainBox: Long, x3: Long
+): Any = TODO("Not yet implement.")
+
+internal fun invokeBridge64(
+    currentThread: Long, mainBox: Long, x3: Long,
+    x4: Long, x5: Long, x6: Long, x7: Long
 ): Any? {
     val box = Box.unlockAndCopy(mainBox)
     val scope = box.calleeRuntimeMethod.searchRecord()

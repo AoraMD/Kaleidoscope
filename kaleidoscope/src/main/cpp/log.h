@@ -29,29 +29,35 @@
 #include <string>
 #include <regex>
 
-#define __DEFAULT_LOG_TAG__ "Kaleidoscope"
+#define __default_log_tag__ "Kaleidoscope"
 
 #define debugLog(message, ...) if (Log::Level::kDebug >= Log::GetLogLevel())\
-    __android_log_print(ANDROID_LOG_DEBUG, __DEFAULT_LOG_TAG__, "C++ %s %s() line %d - " message,\
+    __android_log_print(ANDROID_LOG_DEBUG, __default_log_tag__, "C++ %s %s() line %d - " message,\
         convert_file_name(__FILE__).c_str(), __FUNCTION__, __LINE__, ##__VA_ARGS__);
 
 #define warnLog(message, ...) if (Log::Level::kWarn >= Log::GetLogLevel()) {\
         if (Log::Level::kDebug >= Log::GetLogLevel()) {\
-            __android_log_print(ANDROID_LOG_WARN, __DEFAULT_LOG_TAG__, "C++ %s %s() line %d - " message,\
+            __android_log_print(ANDROID_LOG_WARN, __default_log_tag__, "C++ %s %s() line %d - " message,\
                 convert_file_name(__FILE__).c_str(), __FUNCTION__, __LINE__, ##__VA_ARGS__);\
         } else {\
-            __android_log_print(ANDROID_LOG_WARN, __DEFAULT_LOG_TAG__, "C++ - " message, ##__VA_ARGS__);\
+            __android_log_print(ANDROID_LOG_WARN, __default_log_tag__, "C++ - " message, ##__VA_ARGS__);\
         }\
     }
 
 #define errorLog(message, ...) if (Log::Level::kError >= Log::GetLogLevel()) {\
         if (Log::Level::kDebug >= Log::GetLogLevel()) {\
-            __android_log_print(ANDROID_LOG_ERROR, __DEFAULT_LOG_TAG__, "C++ %s %s() line %d - " message,\
+            __android_log_print(ANDROID_LOG_ERROR, __default_log_tag__, "C++ %s %s() line %d - " message,\
                 convert_file_name(__FILE__).c_str(), __FUNCTION__, __LINE__, ##__VA_ARGS__);\
         } else {\
-            __android_log_print(ANDROID_LOG_ERROR, __DEFAULT_LOG_TAG__, "C++ - " message, ##__VA_ARGS__);\
+            __android_log_print(ANDROID_LOG_ERROR, __default_log_tag__, "C++ - " message, ##__VA_ARGS__);\
         }\
     }
+
+#if defined(__aarch64__) || defined(__x86_64__)
+#define __log_memory_specifier__ "0x%016lx"
+#elif defined(__arm__) || defined(__i386__)
+#define __log_memory_specifier__ "0x%08x"
+#endif
 
 namespace moe::aoramd::kaleidoscope {
 

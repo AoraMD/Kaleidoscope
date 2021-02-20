@@ -212,7 +212,7 @@ extern "C"
 JNIEXPORT jlong JNICALL
 Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_register1(JNIEnv *, jobject,
                                                                    jlong native_peer) {
-    return reinterpret_cast<jlong>(
+    return internal::free_reinterpret_cast<jlong>(
             reinterpret_cast<runtime::Box *>(native_peer)->register_1_);
 }
 
@@ -220,7 +220,7 @@ extern "C"
 JNIEXPORT jlong JNICALL
 Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_register2(JNIEnv *, jobject,
                                                                    jlong native_peer) {
-    return reinterpret_cast<jlong>(
+    return internal::free_reinterpret_cast<jlong>(
             reinterpret_cast<runtime::Box *>(native_peer)->register_2_);
 }
 
@@ -255,17 +255,16 @@ Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_parameterFromStack(JNIE
                                                                             jlong native_peer,
                                                                             jint byte_offset,
                                                                             jint byte_size) {
-    std::uint64_t base =
-            reinterpret_cast<runtime::Box *>(native_peer)->sp_pointer_ + sizeof(std::uint64_t);
-    auto *pointer = reinterpret_cast<std::uint64_t *>(base + byte_offset);
-    std::uint64_t value = *pointer;
+    std::size_t base =
+            reinterpret_cast<runtime::Box *>(native_peer)->sp_pointer_ + sizeof(std::size_t);
+    std::uint64_t value = *reinterpret_cast<std::uint64_t *>(base + byte_offset);
     std::uint64_t mask = 0;
 
     // Delete the extra bits obtained.
     for (int i = 0; i < byte_size; i++) mask = (mask << 8) + 0xff;
     value = value & mask;
 
-    return reinterpret_cast<jlong>(reinterpret_cast<void *>(value));
+    return internal::free_reinterpret_cast<jlong>(value);
 }
 #pragma clang diagnostic pop
 

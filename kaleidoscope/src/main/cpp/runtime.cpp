@@ -51,11 +51,11 @@ namespace moe::aoramd::kaleidoscope::runtime {
 
     ListenResult::ListenResult(mirror::Method *origin) : InsertBridgeResult(origin) {
         clone_ = reinterpret_cast<mirror::Method *>(malloc(mirror::Method::GetSize()));
-        debugLog("Original runtime method 0x%016lx data : %s",
-                 reinterpret_cast<std::uint64_t>(origin), origin->GetDataHexString().c_str())
+        debugLog("Original runtime method " __log_memory_specifier__ " data : %s.",
+                 reinterpret_cast<std::size_t>(origin), origin->GetDataHexString().c_str())
         internal::Memory::Copy(clone_, origin, mirror::Method::GetSize());
-        debugLog("Clone runtime method 0x%016lx data : %s",
-                 reinterpret_cast<std::uint64_t>(clone_), clone_->GetDataHexString().c_str())
+        debugLog("Clone runtime method " __log_memory_specifier__ " data : %s.",
+                 reinterpret_cast<std::size_t>(clone_), clone_->GetDataHexString().c_str())
         clone_->SetPrivate();
     }
 
@@ -160,15 +160,15 @@ namespace moe::aoramd::kaleidoscope::runtime {
         // Create origin bridge.
         result->origin_bridge_ = bridge::Bridge::CreateOrigin(entrance);
         if (result->origin_bridge_ == nullptr) {
-            errorLog("Unable to create origin bridge for runtime method 0x%016lx",
-                     reinterpret_cast<std::uint64_t>(method))
+            errorLog("Unable to create origin bridge for runtime method " __log_memory_specifier__ ".",
+                     reinterpret_cast<std::size_t>(method))
             return false;
         }
 
         mirror::Method *bridge_runtime_method = bridge_runtime_method_[bridge_type_key];
         if (bridge_runtime_method == nullptr) {
-            errorLog("Unable to find bridge method for runtime method 0x%016lx",
-                     reinterpret_cast<std::uint64_t>(method))
+            errorLog("Unable to find bridge method for runtime method " __log_memory_specifier__ ".",
+                     reinterpret_cast<std::size_t>(method))
             return false;
         }
 
@@ -181,8 +181,8 @@ namespace moe::aoramd::kaleidoscope::runtime {
                 result->origin_bridge_
         );
         if (result->secondary_bridge_ == nullptr) {
-            errorLog("Unable to create secondary bridge for runtime method 0x%016lx",
-                     reinterpret_cast<std::uint64_t>(method))
+            errorLog("Unable to create secondary bridge for runtime method "  __log_memory_specifier__ ".",
+                     reinterpret_cast<std::size_t>(method))
             return false;
         }
 
@@ -191,8 +191,8 @@ namespace moe::aoramd::kaleidoscope::runtime {
 
             // Insert main bridge.
             if (!bridge::Bridge::SetMain(entrance, result->secondary_bridge_)) {
-                errorLog("Unable to set main bridge for runtime method 0x%016lx",
-                         reinterpret_cast<std::uint64_t>(method))
+                errorLog("Unable to set main bridge for runtime method " __log_memory_specifier__ ".",
+                         reinterpret_cast<std::size_t>(method))
                 return false;
             }
         }
