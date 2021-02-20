@@ -56,27 +56,19 @@ check_lock:
     mov x17, sp
     str x17, [x16, #8*1]    // sp_pointer_
     str x0, [x16, #8*2]     // callee_runtime_method_pointer_
-    str x2, [x16, #8*3]     // register_2_
-    str x3, [x16, #8*4]     // register_3_
-    str s0, [x16, #40+4*0]  // float_register_, 40 = 8 * 5
-    str s1, [x16, #40+4*1]
-    str s2, [x16, #40+4*2]
-    str s3, [x16, #40+4*3]
-    str s4, [x16, #40+4*4]
-    str s5, [x16, #40+4*5]
-    str s6, [x16, #40+4*6]
-    str s7, [x16, #40+4*7]
-    str d0, [x16, #72+8*0]  // double_register_, 72 = 40 + 4 * 8
-    str d1, [x16, #72+8*1]
-    str d2, [x16, #72+8*2]
-    str d3, [x16, #72+8*3]
-    str d4, [x16, #72+8*4]
-    str d5, [x16, #72+8*5]
-    str d6, [x16, #72+8*6]
-    str d7, [x16, #72+8*7]
+    str x1, [x16, #8*3]     // register_1_
+    str x2, [x16, #8*4]     // register_2_
+    str d0, [x16, #40+8*0]  // floating_registers_, 40 = 8 * 5
+    str d1, [x16, #40+8*1]
+    str d2, [x16, #40+8*2]
+    str d3, [x16, #40+8*3]
+    str d4, [x16, #40+8*4]
+    str d5, [x16, #40+8*5]
+    str d6, [x16, #40+8*6]
+    str d7, [x16, #40+8*7]
     ldr x0, bridge_method
-    mov x2, x19
-    mov x3, x16
+    mov x1, x19
+    mov x2, x16
     ldr x16, bridge_entrance
     br x16
 source_method:

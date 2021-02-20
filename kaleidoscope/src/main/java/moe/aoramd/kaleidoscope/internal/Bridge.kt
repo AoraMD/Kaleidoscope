@@ -36,65 +36,65 @@ internal object Bridge {
 
     @JvmStatic
     private fun voidBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
     ) {
-        invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7)
+        invokeBridge(currentThread, box, x3, x4, x5, x6, x7)
     }
 
     @JvmStatic
     private fun booleanBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Boolean = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Boolean
+    ): Boolean = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Boolean
 
     @JvmStatic
     private fun byteBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Byte = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Byte
+    ): Byte = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Byte
 
     @JvmStatic
     private fun charBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Char = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Char
+    ): Char = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Char
 
     @JvmStatic
     private fun shortBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Short = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Short
+    ): Short = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Short
 
     @JvmStatic
     private fun intBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Int = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Int
+    ): Int = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Int
 
     @JvmStatic
     private fun longBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Long = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Long
+    ): Long = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Long
 
     @JvmStatic
     private fun floatBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Float = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Float
+    ): Float = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Float
 
     @JvmStatic
     private fun doubleBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Double = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7) as Double
+    ): Double = invokeBridge(currentThread, box, x3, x4, x5, x6, x7) as Double
 
     @JvmStatic
     private fun anyBridge(
-        thisOrX1: Long, currentThread: Long, box: Long,
+        currentThread: Long, box: Long, x3: Long,
         x4: Long, x5: Long, x6: Long, x7: Long
-    ): Any? = invokeBridge(thisOrX1, currentThread, box, x4, x5, x6, x7)
+    ): Any? = invokeBridge(currentThread, box, x3, x4, x5, x6, x7)
 }
 
 internal enum class BridgeType(

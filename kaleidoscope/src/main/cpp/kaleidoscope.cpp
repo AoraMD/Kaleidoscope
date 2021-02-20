@@ -210,18 +210,18 @@ Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_calleeRuntimeMethod(JNI
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_register2(JNIEnv *, jobject,
+Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_register1(JNIEnv *, jobject,
                                                                    jlong native_peer) {
     return reinterpret_cast<jlong>(
-            reinterpret_cast<runtime::Box *>(native_peer)->register_2_);
+            reinterpret_cast<runtime::Box *>(native_peer)->register_1_);
 }
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_register3(JNIEnv *, jobject,
+Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_register2(JNIEnv *, jobject,
                                                                    jlong native_peer) {
     return reinterpret_cast<jlong>(
-            reinterpret_cast<runtime::Box *>(native_peer)->register_3_);
+            reinterpret_cast<runtime::Box *>(native_peer)->register_2_);
 }
 
 extern "C"
@@ -230,7 +230,9 @@ Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_parameterFromFloatRegis
                                                                                     jobject,
                                                                                     jlong native_peer,
                                                                                     jint index) {
-    return reinterpret_cast<runtime::Box *>(native_peer)->float_register_[index];
+    return internal::free_reinterpret_cast<jfloat>(
+            reinterpret_cast<runtime::Box *>(native_peer)->floating_registers_[index]
+    );
 }
 
 extern "C"
@@ -239,7 +241,9 @@ Java_moe_aoramd_kaleidoscope_internal_Box_00024Companion_parameterFromDoubleRegi
                                                                                      jobject,
                                                                                      jlong native_peer,
                                                                                      jint index) {
-    return reinterpret_cast<runtime::Box *>(native_peer)->double_register_[index];
+    return internal::free_reinterpret_cast<jdouble>(
+            reinterpret_cast<runtime::Box *>(native_peer)->floating_registers_[index]
+    );
 }
 
 extern "C"

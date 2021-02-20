@@ -97,7 +97,7 @@ namespace moe::aoramd::kaleidoscope::bridge {
         static const int MAIN_BRIDGE_SIZE = 16;
         static const int MAIN_BRIDGE_TARGET_OFFSET = MAIN_BRIDGE_SIZE - 8;
 
-        static const int SECONDARY_BRIDGE_SIZE = 188;
+        static const int SECONDARY_BRIDGE_SIZE = 156;
         static const int SECONDARY_BRIDGE_SOURCE_METHOD_OFFSET = SECONDARY_BRIDGE_SIZE - 40;
         static const int SECONDARY_BRIDGE_BRIDGE_METHOD_OFFSET = SECONDARY_BRIDGE_SIZE - 32;
         static const int SECONDARY_BRIDGE_BRIDGE_ENTRANCE_OFFSET = SECONDARY_BRIDGE_SIZE - 24;

@@ -113,9 +113,9 @@ internal fun restoreBridgeNative(resultPointer: Long) = restoreBridgeNativeInter
 private external fun restoreBridgeNativeInternal(resultPointer: Long)
 
 internal fun invokeBridge(
-    x1: Long,
     currentThread: Long,
     mainBox: Long,
+    x3: Long,
     x4: Long,
     x5: Long,
     x6: Long,
@@ -147,7 +147,7 @@ internal fun invokeBridge(
      */
     var floatingIndex = 0
 
-    longArrayOf(x1, box.x2, box.x3, x4, x5, x6, x7).let { registers ->
+    longArrayOf(box.x1, box.x2, x3, x4, x5, x6, x7).let { registers ->
         for (i in registers.indices) {
             if (size > i) {
                 types[i].apply {

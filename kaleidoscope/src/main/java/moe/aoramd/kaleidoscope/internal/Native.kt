@@ -44,11 +44,11 @@ internal inline class Box(private val nativePeer: Long) {
     val calleeRuntimeMethod: RuntimeMethod
         get() = RuntimeMethod(calleeRuntimeMethod(nativePeer))
 
+    val x1: Long
+        get() = register1(nativePeer)
+
     val x2: Long
         get() = register2(nativePeer)
-
-    val x3: Long
-        get() = register3(nativePeer)
 
     fun parameterFromFloatRegister(index: Int): Float =
         Companion.parameterFromFloatRegister(nativePeer, index)
@@ -64,8 +64,8 @@ internal inline class Box(private val nativePeer: Long) {
         private external fun unlockAndCopyInternal(main: Long): Long
         private external fun releaseInternal(nativePeer: Long)
         private external fun calleeRuntimeMethod(nativePeer: Long): Long
+        private external fun register1(nativePeer: Long): Long
         private external fun register2(nativePeer: Long): Long
-        private external fun register3(nativePeer: Long): Long
         private external fun parameterFromFloatRegister(
             nativePeer: Long, index: Int
         ): Float

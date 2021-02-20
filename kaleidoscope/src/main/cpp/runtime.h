@@ -60,22 +60,17 @@ namespace moe::aoramd::kaleidoscope::runtime {
         /**
          * x2 register data.
          */
-        void *register_2_;
+        std::size_t register_1_;
 
         /**
          * x3 register data.
          */
-        void *register_3_;
-
-        /**
-         * s0 ~ s7 float register data.
-         */
-        float float_register_[8];
+        std::size_t register_2_;
 
         /**
          * d0 ~ d7 double register data.
          */
-        double double_register_[8];
+        std::size_t floating_registers_[8];
     };
 
     /**
