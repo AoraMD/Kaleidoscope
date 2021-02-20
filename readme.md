@@ -6,6 +6,12 @@ Kaleidoscope is an Android dynamic hooking framework for intercepting function c
 
 This library is created for learning Android hook, so it is a demo-level library and is not stable enough to run in any production environment.
 
+## Support
+
+Version : Android 5 ~ Android 11
+
+Architecture: arm64
+
 ## Usage
 
 Kaleidoscope needs to be initialized before using.
