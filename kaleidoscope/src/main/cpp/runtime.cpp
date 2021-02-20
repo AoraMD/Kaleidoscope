@@ -146,10 +146,7 @@ namespace moe::aoramd::kaleidoscope::runtime {
                 warnLog("Current Android version is higher than highest supported version, unexpected error may occur.")
             }
         }
-        if (android_version_ > version) return true;
-        // Check preview version.
-        if (android_version_ == version && preview_android_version_ > 0) return true;
-        return false;
+        return android_version_ >= version;
     }
 
     bool
