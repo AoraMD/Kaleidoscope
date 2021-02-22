@@ -25,6 +25,8 @@
 #ifndef KALEIDOSCOPE_BRIDGE_H
 #define KALEIDOSCOPE_BRIDGE_H
 
+#include <cstddef>
+
 #include "declare.h"
 
 extern "C" void MainBridge();
@@ -95,17 +97,19 @@ namespace moe::aoramd::kaleidoscope::bridge {
 #if defined(__aarch64__)
 
         static const int MAIN_BRIDGE_SIZE = 16;
-        static const int MAIN_BRIDGE_TARGET_OFFSET = MAIN_BRIDGE_SIZE - 8;
+        static const int MAIN_BRIDGE_TARGET_OFFSET = MAIN_BRIDGE_SIZE - sizeof(std::size_t);
 
         static const int SECONDARY_BRIDGE_SIZE = 156;
-        static const int SECONDARY_BRIDGE_SOURCE_METHOD_OFFSET = SECONDARY_BRIDGE_SIZE - 40;
-        static const int SECONDARY_BRIDGE_BRIDGE_METHOD_OFFSET = SECONDARY_BRIDGE_SIZE - 32;
-        static const int SECONDARY_BRIDGE_BRIDGE_ENTRANCE_OFFSET = SECONDARY_BRIDGE_SIZE - 24;
-        static const int SECONDARY_BRIDGE_BRIDGE_BOX_POINTER_OFFSET = SECONDARY_BRIDGE_SIZE - 16;
-        static const int SECONDARY_BRIDGE_ORIGIN_BRIDGE_OFFSET = SECONDARY_BRIDGE_SIZE - 8;
+        static const int SECONDARY_BRIDGE_SOURCE_METHOD_OFFSET = SECONDARY_BRIDGE_SIZE - sizeof(std::size_t) * 5;
+        static const int SECONDARY_BRIDGE_BRIDGE_METHOD_OFFSET = SECONDARY_BRIDGE_SIZE - sizeof(std::size_t) * 4;
+        static const int SECONDARY_BRIDGE_BRIDGE_ENTRANCE_OFFSET = SECONDARY_BRIDGE_SIZE - sizeof(std::size_t) * 3;
+        static const int SECONDARY_BRIDGE_BRIDGE_BOX_POINTER_OFFSET = SECONDARY_BRIDGE_SIZE - sizeof(std::size_t) * 2;
+        static const int SECONDARY_BRIDGE_ORIGIN_BRIDGE_OFFSET = SECONDARY_BRIDGE_SIZE - sizeof(std::size_t) * 1;
 
-        static const int ORIGIN_BRIDGE_SIZE = MAIN_BRIDGE_SIZE + 16;
-        static const int ORIGIN_BRIDGE_LEFT_OFFSET = ORIGIN_BRIDGE_SIZE - 8;
+        static const int ORIGIN_BRIDGE_BACKUP_SIZE = MAIN_BRIDGE_SIZE;
+        static const int ORIGIN_BRIDGE_SIZE = ORIGIN_BRIDGE_BACKUP_SIZE + 16;
+        static const int ORIGIN_BRIDGE_LEFT_OFFSET = ORIGIN_BRIDGE_SIZE - sizeof(std::size_t);
+
 
 // TODO: Replace to correct value.
 #elif defined(__x86_64__)

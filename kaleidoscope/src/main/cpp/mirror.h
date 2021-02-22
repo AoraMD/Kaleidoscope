@@ -104,9 +104,9 @@ namespace moe::aoramd::kaleidoscope::mirror {
         bool Compile(Thread *current_thread);
 
         static Compiler *compiler_;
-        static int runtime_method_size_;
-        static int entry_point_for_quick_compiled_code_offset_;
-        static int access_flag_offset_;
+        static std::size_t runtime_method_size_;
+        static std::size_t entry_point_for_quick_compiled_code_offset_;
+        static std::size_t access_flag_offset_;
         static void *entry_point_for_jit_compile_;
 
         /**

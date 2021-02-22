@@ -67,10 +67,25 @@ namespace moe::aoramd::kaleidoscope::runtime {
          */
         std::size_t register_2_;
 
+#if defined(__aarch64__) || defined(__x86_64__)
+
         /**
-         * d0 ~ d7 double register data.
+         * floating registers data.
+         *
+         * In arm64, floating registers is d0 ~ d7.
          */
         std::size_t floating_registers_[8];
+
+#elif defined(__arm__) || defined(__i386__)
+
+        /**
+         * floating registers data.
+         *
+         * In x86, floating registers is xmm0 ~ xmm3.
+         */
+        std::size_t floating_registers_[4];
+
+#endif
     };
 
     /**

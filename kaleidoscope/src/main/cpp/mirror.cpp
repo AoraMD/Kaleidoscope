@@ -35,9 +35,9 @@
 namespace moe::aoramd::kaleidoscope::mirror {
 
     Compiler *Method::compiler_ = nullptr;
-    int Method::runtime_method_size_ = -1;
-    int Method::entry_point_for_quick_compiled_code_offset_ = -1;
-    int Method::access_flag_offset_ = -1;
+    std::size_t Method::runtime_method_size_ = 0;
+    std::size_t Method::entry_point_for_quick_compiled_code_offset_ = 0;
+    std::size_t Method::access_flag_offset_ = 0;
     void *Method::entry_point_for_jit_compile_ = nullptr;
 
     template<typename T>
@@ -120,6 +120,8 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
         // Calculate runtime method field offsets.
 
+#if defined(__aarch64__) || defined(__x86_64)
+        // 64 bit environment.
         if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kPie, true)) {
             entry_point_for_quick_compiled_code_offset_ = 32;
             access_flag_offset_ = 4;
@@ -127,9 +129,12 @@ namespace moe::aoramd::kaleidoscope::mirror {
                 runtime::AndroidVersion::kOreo)) { // NOLINT(bugprone-branch-clone)
             entry_point_for_quick_compiled_code_offset_ = 40;
             access_flag_offset_ = 4;
-        } else if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kMarshmallow)) {
+        } else if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kNougat)) {
             entry_point_for_quick_compiled_code_offset_ = 48;
             access_flag_offset_ = 4;
+        } else if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kMarshmallow)) {
+            entry_point_for_quick_compiled_code_offset_ = 48;
+            access_flag_offset_ = 12;
         } else if (runtime::Runtime::AndroidVersionAtLeast(
                 runtime::AndroidVersion::kLollipopPlus)) {
             entry_point_for_quick_compiled_code_offset_ = 52;
@@ -139,6 +144,32 @@ namespace moe::aoramd::kaleidoscope::mirror {
             entry_point_for_quick_compiled_code_offset_ = 40;
             access_flag_offset_ = 56;
         }
+#elif defined(__arm__) || defined(__i386__)
+        // 32 bit environment.
+        if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kPie, true)) {
+            entry_point_for_quick_compiled_code_offset_ = 24;
+            access_flag_offset_ = 4;
+        } else if (runtime::Runtime::AndroidVersionAtLeast(
+                runtime::AndroidVersion::kOreo)) { // NOLINT(bugprone-branch-clone)
+            entry_point_for_quick_compiled_code_offset_ = 28;
+            access_flag_offset_ = 4;
+        } else if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kNougat)) {
+            entry_point_for_quick_compiled_code_offset_ = 32;
+            access_flag_offset_ = 4;
+        } else if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kMarshmallow)) {
+            entry_point_for_quick_compiled_code_offset_ = 36;
+            access_flag_offset_ = 12;
+        } else if (runtime::Runtime::AndroidVersionAtLeast(
+                runtime::AndroidVersion::kLollipopPlus)) {
+            entry_point_for_quick_compiled_code_offset_ = 44;
+            access_flag_offset_ = 20;
+        } else {
+            // runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kLollipop)
+            // TODO: In Android 5.0, size of entry point for quick compiled code is 64 bit.
+            entry_point_for_quick_compiled_code_offset_ = 40;
+            access_flag_offset_ = 56;
+        }
+#endif
 
         // Get Android Runtime JIT entry point.
 
@@ -155,7 +186,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
                     standard_method->GetEntryPointFromQuickCompiledCode();
             if (entry_point_before_compile != entry_point_after_compile) {
                 entry_point_for_jit_compile_ = entry_point_before_compile;
-                debugLog("Entry point for JNI compile is set to 0x%016lx",
+                debugLog("Entry point for JNI compile is set to " __log_memory_specifier__ ".",
                          reinterpret_cast<std::size_t>(entry_point_for_jit_compile_))
             } else {
                 errorLog("The standard method is already compiled before used.")
@@ -186,7 +217,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
     }
 
     void *Method::GetEntryPointFromQuickCompiledCode() {
-        if (UNLIKELY(entry_point_for_quick_compiled_code_offset_ < 0)) return nullptr;
+        if (UNLIKELY(entry_point_for_quick_compiled_code_offset_ == 0)) return nullptr;
         return *reinterpret_cast<void **>(
                 reinterpret_cast<std::size_t>(this) +
                 entry_point_for_quick_compiled_code_offset_);
@@ -199,7 +230,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
         std::int32_t state_and_flags_backup = *state_and_flags;
         bool result = compiler_->Compile(this, current_thread);
         *state_and_flags = state_and_flags_backup;
-        debugLog("Entry point of compiled runtime method 0x%016lx is 0x%016lx",
+        debugLog("Entry point of compiled runtime method " __log_memory_specifier__ " is " __log_memory_specifier__ ".",
                  reinterpret_cast<std::size_t>(this),
                  reinterpret_cast<std::size_t>(GetEntryPointFromQuickCompiledCode()))
         return result;
