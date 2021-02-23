@@ -131,6 +131,17 @@ internal fun invokeBridge64(
     val size = types.size
     var offset = 0
 
+    val generalPurposeRegisters = longArrayOf(box.x1, box.x2, x3, x4, x5, x6, x7)
+
+    /*
+        Index used to get the general purpose register data.
+
+        Index for getting integer data is not equal to the index of parameters, but the
+        index of integer parameters, so the variable is calculated separately from the
+        parameter index.
+     */
+    var integerIndex = 0
+
     /*
         Index used to get the floating point register data.
 
@@ -146,28 +157,29 @@ internal fun invokeBridge64(
      */
     var floatingIndex = 0
 
-    longArrayOf(box.x1, box.x2, x3, x4, x5, x6, x7).let { registers ->
-        for (i in registers.indices) {
-            if (size > i) {
-                types[i].apply {
-                    data.add(
-                        when (this) {
-                            Float::class.java -> box.parameterFromFloatRegister(floatingIndex++)
-                            Double::class.java -> box.parameterFromDoubleRegister(floatingIndex++)
-                            else -> convert(registers[i], currentThread)
-                        }
-                    )
-                    offset += stackSize
+    for (i in 0 until size) {
+        types[i].apply {
+            data.add(
+                when (this) {
+                    Float::class.java ->
+                        if (floatingIndex < 8)
+                            box.parameterFromFloatRegister(floatingIndex++)
+                        else
+                            convert(box.parameterFromStack(offset, stackSize), currentThread)
+                    Double::class.java ->
+                        if (floatingIndex < 8)
+                            box.parameterFromDoubleRegister(floatingIndex++)
+                        else
+                            convert(box.parameterFromStack(offset, stackSize), currentThread)
+                    else ->
+                        if (integerIndex < 7)
+                            convert(generalPurposeRegisters[integerIndex++], currentThread)
+                        else
+                            convert(box.parameterFromStack(offset, stackSize), currentThread)
                 }
-            }
+            )
+            offset += stackSize
         }
-    }
-
-    for (i in 7 until size) {
-        val type = types[i]
-        val nativeSize = type.stackSize
-        data.add(type.convert(box.parameterFromStack(offset, nativeSize), currentThread))
-        offset += nativeSize
     }
 
     // data.size == types.size == size.
