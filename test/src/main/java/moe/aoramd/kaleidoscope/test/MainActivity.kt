@@ -32,10 +32,10 @@ class MainActivity : AppCompatActivity() {
             Any::class.java,
             Long::class.java
         ).listen()
-            .before {
+            .before { _, _ ->
                 System.currentTimeMillis()
             }
-            .after { thiz, state ->
+            .after { thiz, _, state ->
                 val time = System.currentTimeMillis() - state as Long
                 Log.i(
                     "Kaleidoscope Sample",
@@ -72,10 +72,10 @@ class MainActivity : AppCompatActivity() {
             Any::class.java,
             Long::class.java
         ).listen()
-            .before {
+            .before { _, _ ->
                 System.currentTimeMillis()
             }
-            .after { thiz, store ->
+            .after { thiz, _, store ->
                 val time = System.currentTimeMillis() - store as Long
                 Log.i(
                     "Kaleidoscope Sample",

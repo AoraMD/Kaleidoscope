@@ -50,16 +50,16 @@ sealed class ValidScope(
 }
 
 class ListenScope internal constructor(
-    private val before: (Any?) -> Any?,
-    private val after: (Any?, Any?) -> Unit,
+    private val before: (Any?, Array<Any?>) -> Any?,
+    private val after: (Any?, Array<Any?>, Any?) -> Unit,
     private val target: Method,
     source: Method,
     result: InsertBridgeResult
 ) : ValidScope(source, result) {
     override fun invoke(thiz: Any?, parameters: Array<Any?>): Any? {
-        val store = before.invoke(thiz)
+        val store = before.invoke(thiz, parameters)
         val result = target.invoke(thiz, *parameters)
-        after.invoke(thiz, store)
+        after.invoke(thiz, parameters, store)
         return result
     }
 }

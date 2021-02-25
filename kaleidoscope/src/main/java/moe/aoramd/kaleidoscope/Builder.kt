@@ -37,8 +37,8 @@ sealed class Builder(protected val source: Method) {
 
 class ListenBuilder internal constructor(method: Method) : Builder(method) {
 
-    private var beforeListener: (Any?) -> Any? = { null }
-    private var afterListener: (Any?, Any?) -> Unit = { _, _ -> }
+    private var beforeListener: (Any?, Array<Any?>) -> Any? = { _, _ -> }
+    private var afterListener: (Any?, Array<Any?>, Any?) -> Unit = { _, _, _ -> }
 
     /**
      * Add a listener which is called before the method is invoked.
@@ -49,7 +49,7 @@ class ListenBuilder internal constructor(method: Method) : Builder(method) {
      * The return value of listener is the data that needs to be obtained in listener
      * after the method is invoked. See [after].
      */
-    fun before(listener: (thiz: Any?) -> Any?): ListenBuilder = apply {
+    fun before(listener: (thiz: Any?, parameters: Array<Any?>) -> Any?): ListenBuilder = apply {
         beforeListener = listener
     }
 
@@ -62,7 +62,7 @@ class ListenBuilder internal constructor(method: Method) : Builder(method) {
      * The second parameter of listener is the data stored by listener called
      * before the method is invoked. See [before].
      */
-    fun after(listener: (thiz: Any?, store: Any?) -> Unit): ListenBuilder = apply {
+    fun after(listener: (thiz: Any?, parameters: Array<Any?>, store: Any?) -> Unit): ListenBuilder = apply {
         afterListener = listener
     }
 

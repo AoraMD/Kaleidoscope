@@ -30,10 +30,10 @@ Then you can listen or replace method calls.
 
 ``` kotlin
 val scope = method.listen()
-            .before {
+            .before { thiz, parameters ->
                 System.currentTimeMillis()
             }
-            .after { thiz, store ->
+            .after { thiz, parameters, store ->
                 val time = System.currentTimeMillis() - store as Long
                 Log.i("Kaleidoscope Sample", "The method of object $thiz is called, which takes $time milliseconds.")
             }
