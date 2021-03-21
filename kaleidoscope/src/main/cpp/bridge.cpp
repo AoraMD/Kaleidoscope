@@ -52,8 +52,7 @@ namespace moe::aoramd::kaleidoscope::bridge {
 
         // Set parameter - target.
         *reinterpret_cast<void **>(
-                reinterpret_cast<std::size_t>(origin_entrance) +
-                        kMainBridgeTargetOffset
+                reinterpret_cast<std::size_t>(origin_entrance) + kMainBridgeTargetOffset
         ) = secondary_bridge;
 
         return true;
@@ -74,28 +73,23 @@ namespace moe::aoramd::kaleidoscope::bridge {
 
         // Set parameter - source method.
         *reinterpret_cast<mirror::Method **>(
-                reinterpret_cast<std::size_t>(result) +
-                        kSecondaryBridgeSourceMethodOffset
+                reinterpret_cast<std::size_t>(result) + kSecondaryBridgeSourceMethodOffset
         ) = source_method;
         // Set parameter - bridge method.
         *reinterpret_cast<mirror::Method **>(
-                reinterpret_cast<std::size_t>(result) +
-                        kSecondaryBridgeBridgeMethodOffset
+                reinterpret_cast<std::size_t>(result) + kSecondaryBridgeBridgeMethodOffset
         ) = bridge_method;
         // Set parameter - bridge entrance.
         *reinterpret_cast<void **>(
-                reinterpret_cast<std::size_t>(result) +
-                        kSecondaryBridgeBridgeEntranceOffset
+                reinterpret_cast<std::size_t>(result) + kSecondaryBridgeBridgeEntranceOffset
         ) = bridge_entrance;
         // Set parameter - bridge box.
         *reinterpret_cast<runtime::Box **>(
-                reinterpret_cast<std::size_t>(result) +
-                        kSecondaryBridgeBoxPointerOffset
+                reinterpret_cast<std::size_t>(result) + kSecondaryBridgeBoxPointerOffset
         ) = box;
         // Set parameter - origin bridge.
         *reinterpret_cast<void **>(
-                reinterpret_cast<std::size_t>(result) +
-                        kSecondaryBridgeOriginBridgeOffset
+                reinterpret_cast<std::size_t>(result) + kSecondaryBridgeOriginBridgeOffset
         ) = origin_bridge;
 
         // Unprotect memory.
@@ -110,26 +104,27 @@ namespace moe::aoramd::kaleidoscope::bridge {
     }
 
     void *Bridge::CreateOrigin(void *origin_entrance) {
-        void *result = malloc(kOriginBridgeSize);
-        debugLog("Create origin bridge pointer : " __log_memory_specifier__ ".", reinterpret_cast<std::size_t>(result))
-        internal::Memory::Copy(result, reinterpret_cast<void *>(OriginBridge), kOriginBridgeSize);
-        internal::Memory::Copy(result, origin_entrance, kMainBridgeSize);
 
-        // Set parameter - left.
-        *reinterpret_cast<void **>(
-                reinterpret_cast<std::size_t>(result) +
-                        kOriginBridgeLeftSize
-        ) = reinterpret_cast<void *>(reinterpret_cast<std::size_t>(origin_entrance) +
-                                     kMainBridgeSize);
+        std::int32_t code_size = *reinterpret_cast<std::int32_t *>(
+                reinterpret_cast<std::size_t>(origin_entrance) - sizeof(std::int32_t));
+
+        debugLog("Get origin code size %d", code_size)
+
+        void *result = malloc(code_size);
+        debugLog("Create origin bridge pointer : " __log_memory_specifier__ ".",
+                 reinterpret_cast<std::size_t>(result))
 
         // Unprotect memory.
-        if (!internal::Memory::Unprotect(result, kOriginBridgeSize)) {
+        if (!internal::Memory::Unprotect(result, code_size)) {
             errorLog(
                     "Unable to disable memory protection on origin bridge " __log_memory_specifier__ ".",
                     reinterpret_cast<std::size_t>(result))
             free(result);
             return nullptr;
         }
+
+        internal::Memory::Copy(result, origin_entrance, code_size);
+
         return result;
     }
 }

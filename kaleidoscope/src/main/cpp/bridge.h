@@ -116,7 +116,23 @@ namespace moe::aoramd::kaleidoscope::bridge {
         static const int kOriginBridgeLeftSize = kOriginBridgeSize - sizeof(std::size_t);
 
 // TODO: Replace to correct value.
-#elif defined(__x86_64__)
+#else
+
+        static const int kMainBridgeSize = 16;
+        static const int kMainBridgeTargetOffset = kMainBridgeSize - sizeof(std::size_t);
+
+        static const int kSecondaryBridgeSize = 156;
+        static const int kSecondaryBridgeSourceMethodOffset =
+                kSecondaryBridgeSize - sizeof(std::size_t) * 5;
+        static const int kSecondaryBridgeBridgeMethodOffset =
+                kSecondaryBridgeSize - sizeof(std::size_t) * 4;
+        static const int kSecondaryBridgeBridgeEntranceOffset =
+                kSecondaryBridgeSize - sizeof(std::size_t) * 3;
+        static const int kSecondaryBridgeBoxPointerOffset =
+                kSecondaryBridgeSize - sizeof(std::size_t) * 2;
+        static const int kSecondaryBridgeOriginBridgeOffset =
+                kSecondaryBridgeSize - sizeof(std::size_t) * 1;
+
 #endif
     };
 }
