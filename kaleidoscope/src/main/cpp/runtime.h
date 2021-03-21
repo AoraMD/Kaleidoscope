@@ -257,8 +257,8 @@ namespace moe::aoramd::kaleidoscope::runtime {
 
             static void (*resume_function_)(ScopedSuspendAll *);
 
-            static constexpr const char *FUNCTION_SUSPEND_ALL_SYMBOL = "_ZN3art16ScopedSuspendAllC1EPKcb";
-            static constexpr const char *FUNCTION_RESUME_ALL_SYMBOL = "_ZN3art16ScopedSuspendAllD1Ev";
+            static constexpr const char *kFunctionSuspendAllSymbol = "_ZN3art16ScopedSuspendAllC1EPKcb";
+            static constexpr const char *kFunctionResumeAllSymbol = "_ZN3art16ScopedSuspendAllD1Ev";
         };
     };
 }

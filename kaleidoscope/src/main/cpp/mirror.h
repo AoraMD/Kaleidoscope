@@ -112,8 +112,8 @@ namespace moe::aoramd::kaleidoscope::mirror {
         /**
          * Type of access flags in art::ArtMethod is std::atomic<std::uint32_t>.
          */
-        static const std::uint32_t ACCESS_FLAG_PUBLIC_MASK = 0b01;
-        static const std::uint32_t ACCESS_FLAG_PRIVATE_MASK = 0b10;
+        static const std::uint32_t kAccessFlagPublicMask = 0b01;
+        static const std::uint32_t kAccessFlagPrivateMask = 0b10;
     };
 
     /**
@@ -129,7 +129,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
         static void *function_compile_method_;
         static void *function_compile_method_handler_;
 
-        static constexpr const char *FUNCTION_LOAD_SYMBOL = "jit_load";
+        static constexpr const char *kFunctionLoadSymbol = "jit_load";
 
     private:
         virtual bool Compile(Method *method, Thread *current_thread) = 0;
@@ -146,7 +146,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
         bool Compile(Method *method, Thread *current_thread) override;
 
-        static constexpr const char *FUNCTION_COMPILE_METHOD_SYMBOL = "jit_compile_method";
+        static constexpr const char *kFunctionCompileMethodSymbol = "jit_compile_method";
     };
 
     /**
@@ -160,7 +160,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
         bool Compile(Method *method, Thread *current_thread) override;
 
-        static constexpr const char *FUNCTION_COMPILE_METHOD_SYMBOL = "jit_compile_method";
+        static constexpr const char *kFunctionCompileMethodSymbol = "jit_compile_method";
     };
 
     /**
@@ -177,9 +177,9 @@ namespace moe::aoramd::kaleidoscope::mirror {
         void *jit_code_cache_;
         void *function_get_current_region_;
 
-        static constexpr const char *FUNCTION_COMPILE_METHOD_SYMBOL =
+        static constexpr const char *kFunctionCompileMethodSymbol =
                 "_ZN3art3jit11JitCompiler13CompileMethodEPNS_6ThreadEPNS0_15JitMemoryRegionEPNS_9ArtMethodEbb";
-        static constexpr const char *FUNCTION_GET_CURRENT_REGION =
+        static constexpr const char *kFunctionGetCurrentRegion =
                 "_ZN3art3jit12JitCodeCache16GetCurrentRegionEv";
     };
 }

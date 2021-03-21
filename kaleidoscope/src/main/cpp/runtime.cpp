@@ -203,9 +203,9 @@ namespace moe::aoramd::kaleidoscope::runtime {
 
     bool Runtime::ScopedSuspendAll::Initialize() {
         suspend_function_ = reinterpret_cast<void (*)(ScopedSuspendAll *, const char *)>(
-                internal::Library::SymbolInArtLibrary(FUNCTION_SUSPEND_ALL_SYMBOL));
+                internal::Library::SymbolInArtLibrary(kFunctionSuspendAllSymbol));
         resume_function_ = reinterpret_cast<void (*)(ScopedSuspendAll *)>(
-                internal::Library::SymbolInArtLibrary(FUNCTION_RESUME_ALL_SYMBOL));
+                internal::Library::SymbolInArtLibrary(kFunctionResumeAllSymbol));
         return true;
     }
 

@@ -35,71 +35,71 @@ namespace moe::aoramd::kaleidoscope::bridge {
         // Check whether compiled code size is less than main bridge.
         auto *size_pointer = reinterpret_cast<std::int32_t *>(
                 reinterpret_cast<std::size_t>(origin_entrance) - sizeof(std::int32_t));
-        if (*size_pointer < MAIN_BRIDGE_SIZE) {
+        if (*size_pointer < kMainBridgeSize) {
             errorLog(
                     "Method code length is less than main bridge code length, so it cannot be inserted.")
             return false;
         }
 
-        if (!internal::Memory::Unprotect(origin_entrance, MAIN_BRIDGE_SIZE)) {
+        if (!internal::Memory::Unprotect(origin_entrance, kMainBridgeSize)) {
             errorLog(
                     "Unable to disable memory protection on runtime method entry point " __log_memory_specifier__ ".",
                     reinterpret_cast<std::size_t>(origin_entrance))
             return false;
         }
         internal::Memory::Copy(origin_entrance, reinterpret_cast<void *>(MainBridge),
-                               MAIN_BRIDGE_SIZE);
+                               kMainBridgeSize);
 
         // Set parameter - target.
         *reinterpret_cast<void **>(
                 reinterpret_cast<std::size_t>(origin_entrance) +
-                MAIN_BRIDGE_TARGET_OFFSET
+                        kMainBridgeTargetOffset
         ) = secondary_bridge;
 
         return true;
     }
 
     void Bridge::RecoverMain(void *entrance, void *origin_bridge) {
-        internal::Memory::Copy(entrance, origin_bridge, MAIN_BRIDGE_SIZE);
+        internal::Memory::Copy(entrance, origin_bridge, kMainBridgeSize);
     }
 
     void *Bridge::CreateSecondary(mirror::Method *source_method, mirror::Method *bridge_method,
                                   void *bridge_entrance, runtime::Box *box,
                                   void *origin_bridge) {
-        void *result = malloc(SECONDARY_BRIDGE_SIZE);
+        void *result = malloc(kSecondaryBridgeSize);
         debugLog("Create secondary bridge pointer : " __log_memory_specifier__ ".",
                  reinterpret_cast<std::size_t>(result))
         internal::Memory::Copy(result, reinterpret_cast<void *>(SecondaryBridge),
-                               SECONDARY_BRIDGE_SIZE);
+                               kSecondaryBridgeSize);
 
         // Set parameter - source method.
         *reinterpret_cast<mirror::Method **>(
                 reinterpret_cast<std::size_t>(result) +
-                SECONDARY_BRIDGE_SOURCE_METHOD_OFFSET
+                        kSecondaryBridgeSourceMethodOffset
         ) = source_method;
         // Set parameter - bridge method.
         *reinterpret_cast<mirror::Method **>(
                 reinterpret_cast<std::size_t>(result) +
-                SECONDARY_BRIDGE_BRIDGE_METHOD_OFFSET
+                        kSecondaryBridgeBridgeMethodOffset
         ) = bridge_method;
         // Set parameter - bridge entrance.
         *reinterpret_cast<void **>(
                 reinterpret_cast<std::size_t>(result) +
-                SECONDARY_BRIDGE_BRIDGE_ENTRANCE_OFFSET
+                        kSecondaryBridgeBridgeEntranceOffset
         ) = bridge_entrance;
         // Set parameter - bridge box.
         *reinterpret_cast<runtime::Box **>(
                 reinterpret_cast<std::size_t>(result) +
-                SECONDARY_BRIDGE_BRIDGE_BOX_POINTER_OFFSET
+                        kSecondaryBridgeBoxPointerOffset
         ) = box;
         // Set parameter - origin bridge.
         *reinterpret_cast<void **>(
                 reinterpret_cast<std::size_t>(result) +
-                SECONDARY_BRIDGE_ORIGIN_BRIDGE_OFFSET
+                        kSecondaryBridgeOriginBridgeOffset
         ) = origin_bridge;
 
         // Unprotect memory.
-        if (!internal::Memory::Unprotect(result, SECONDARY_BRIDGE_SIZE)) {
+        if (!internal::Memory::Unprotect(result, kSecondaryBridgeSize)) {
             errorLog(
                     "Unable to disable memory protection on secondary bridge " __log_memory_specifier__ ".",
                     reinterpret_cast<std::size_t>(result))
@@ -110,20 +110,20 @@ namespace moe::aoramd::kaleidoscope::bridge {
     }
 
     void *Bridge::CreateOrigin(void *origin_entrance) {
-        void *result = malloc(ORIGIN_BRIDGE_SIZE);
+        void *result = malloc(kOriginBridgeSize);
         debugLog("Create origin bridge pointer : " __log_memory_specifier__ ".", reinterpret_cast<std::size_t>(result))
-        internal::Memory::Copy(result, reinterpret_cast<void *>(OriginBridge), ORIGIN_BRIDGE_SIZE);
-        internal::Memory::Copy(result, origin_entrance, MAIN_BRIDGE_SIZE);
+        internal::Memory::Copy(result, reinterpret_cast<void *>(OriginBridge), kOriginBridgeSize);
+        internal::Memory::Copy(result, origin_entrance, kMainBridgeSize);
 
         // Set parameter - left.
         *reinterpret_cast<void **>(
                 reinterpret_cast<std::size_t>(result) +
-                ORIGIN_BRIDGE_LEFT_OFFSET
+                        kOriginBridgeLeftSize
         ) = reinterpret_cast<void *>(reinterpret_cast<std::size_t>(origin_entrance) +
-                                     MAIN_BRIDGE_SIZE);
+                                     kMainBridgeSize);
 
         // Unprotect memory.
-        if (!internal::Memory::Unprotect(result, ORIGIN_BRIDGE_SIZE)) {
+        if (!internal::Memory::Unprotect(result, kOriginBridgeSize)) {
             errorLog(
                     "Unable to disable memory protection on origin bridge " __log_memory_specifier__ ".",
                     reinterpret_cast<std::size_t>(result))

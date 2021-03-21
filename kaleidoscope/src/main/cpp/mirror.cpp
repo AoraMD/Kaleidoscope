@@ -200,7 +200,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
     void Method::SetPrivate() {
         auto *pointer = reinterpret_cast<std::uint32_t *>(this + access_flag_offset_);
-        *pointer = *pointer & ~ACCESS_FLAG_PUBLIC_MASK | ACCESS_FLAG_PRIVATE_MASK;
+        *pointer = *pointer & ~kAccessFlagPublicMask | kAccessFlagPrivateMask;
     }
 
     std::string Method::GetDataHexString() {
@@ -242,7 +242,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
     Compiler::Compiler() {
         auto compile_method_handler_loader =
                 reinterpret_cast<void *(*)(bool *)>(
-                        internal::Library::SymbolInJitLibrary(FUNCTION_LOAD_SYMBOL));
+                        internal::Library::SymbolInJitLibrary(kFunctionLoadSymbol));
 
         bool generate_debug_info = false;
         function_compile_method_handler_ = compile_method_handler_loader(&generate_debug_info);
@@ -250,7 +250,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
     CompilerBase::CompilerBase() : Compiler() {
         function_compile_method_ =
-                internal::Library::SymbolInJitLibrary(FUNCTION_COMPILE_METHOD_SYMBOL);
+                internal::Library::SymbolInJitLibrary(kFunctionCompileMethodSymbol);
     }
 
     bool CompilerBase::Compile(Method *method, Thread *current_thread) {
@@ -260,7 +260,7 @@ namespace moe::aoramd::kaleidoscope::mirror {
 
     CompilerOnQ::CompilerOnQ() : Compiler() {
         function_compile_method_ =
-                internal::Library::SymbolInJitLibrary(FUNCTION_COMPILE_METHOD_SYMBOL);
+                internal::Library::SymbolInJitLibrary(kFunctionCompileMethodSymbol);
     }
 
     bool CompilerOnQ::Compile(Method *method, Thread *current_thread) {
@@ -272,10 +272,10 @@ namespace moe::aoramd::kaleidoscope::mirror {
     CompilerOnR::CompilerOnR(void *jit_code_cache) : Compiler(),
                                                      jit_code_cache_(jit_code_cache) {
         function_compile_method_ =
-                internal::Library::SymbolInJitLibrary(FUNCTION_COMPILE_METHOD_SYMBOL);
+                internal::Library::SymbolInJitLibrary(kFunctionCompileMethodSymbol);
 
         function_get_current_region_ =
-                internal::Library::SymbolInArtLibrary(FUNCTION_GET_CURRENT_REGION);
+                internal::Library::SymbolInArtLibrary(kFunctionGetCurrentRegion);
     }
 
     bool CompilerOnR::Compile(Method *method, Thread *current_thread) {

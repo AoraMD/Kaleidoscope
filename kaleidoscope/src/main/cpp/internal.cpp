@@ -98,7 +98,7 @@ namespace moe::aoramd::kaleidoscope::internal {
         // Initialize Java class references for Android 11.
         if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kR, true)) {
             jvm_executable_class_ =
-                    internal::Jni::GetClassGlobalReference(env, JVM_EXECUTABLE_CLASS_NAME);
+                    internal::Jni::GetClassGlobalReference(env, kJvmExecutableClassName);
             if (env->ExceptionCheck()) env->ExceptionClear();
             if (jvm_executable_class_ == nullptr) {
                 errorLog("Cannot find class java.lang.reflect.Executable in runtime.")
@@ -108,14 +108,14 @@ namespace moe::aoramd::kaleidoscope::internal {
 
         if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kOreo, true)) {
             function_add_weak_global_reference_ =
-                    Library::SymbolInArtLibrary(FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_AND_ABOVE_O);
+                    Library::SymbolInArtLibrary(kFunctionAddWeakGlobalReferenceOnAndAboveO);
         } else if (runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kMarshmallow)) {
             function_add_weak_global_reference_ =
-                    Library::SymbolInArtLibrary(FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_M_AND_N);
+                    Library::SymbolInArtLibrary(kFunctionAddWeakGlobalReferenceOnMAndN);
         } else {
             // runtime::Runtime::AndroidVersionAtLeast(runtime::AndroidVersion::kLollipop)
             function_add_weak_global_reference_ =
-                    Library::SymbolInArtLibrary(FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_L);
+                    Library::SymbolInArtLibrary(kFunctionAddWeakGlobalReferenceOnL);
         }
         return true;
     }

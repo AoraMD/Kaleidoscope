@@ -143,13 +143,13 @@ namespace moe::aoramd::kaleidoscope::internal {
 
         static void *function_add_weak_global_reference_;
 
-        static constexpr const char *JVM_EXECUTABLE_CLASS_NAME = "java/lang/reflect/Executable";
+        static constexpr const char *kJvmExecutableClassName = "java/lang/reflect/Executable";
 
-        static constexpr const char *FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_L =
+        static constexpr const char *kFunctionAddWeakGlobalReferenceOnL =
                 "_ZN3art9JavaVMExt22AddWeakGlobalReferenceEPNS_6ThreadEPNS_6mirror6ObjectE";
-        static constexpr const char *FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_M_AND_N =
+        static constexpr const char *kFunctionAddWeakGlobalReferenceOnMAndN =
                 "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadEPNS_6mirror6ObjectE";
-        static constexpr const char *FUNCTION_ADD_WEAK_GLOBAL_REFERENCE_ON_AND_ABOVE_O =
+        static constexpr const char *kFunctionAddWeakGlobalReferenceOnAndAboveO =
                 "_ZN3art9JavaVMExt16AddWeakGlobalRefEPNS_6ThreadENS_6ObjPtrINS_6mirror6ObjectEEE";
     };
 }
