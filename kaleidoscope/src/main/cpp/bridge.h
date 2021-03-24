@@ -33,8 +33,6 @@ extern "C" void MainBridge();
 
 extern "C" void SecondaryBridge();
 
-extern "C" void OriginBridge();
-
 namespace moe::aoramd::kaleidoscope::bridge {
 
     /**
@@ -110,10 +108,6 @@ namespace moe::aoramd::kaleidoscope::bridge {
                 kSecondaryBridgeSize - sizeof(std::size_t) * 2;
         static const int kSecondaryBridgeOriginBridgeOffset =
                 kSecondaryBridgeSize - sizeof(std::size_t) * 1;
-
-        static const int kOriginBridgeBackupSize = kMainBridgeSize;
-        static const int kOriginBridgeSize = kOriginBridgeBackupSize + 16;
-        static const int kOriginBridgeLeftSize = kOriginBridgeSize - sizeof(std::size_t);
 
 // TODO: Replace to correct value.
 #else

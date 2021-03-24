@@ -82,17 +82,3 @@ bridge_box_pointer:
 origin_bridge:
     .quad 0
     .size SecondaryBridge, .-SecondaryBridge
-
-// void OriginBridge();
-    .text
-    .align 4
-	.global	OriginBridge
-	.type	OriginBridge, %function
-OriginBridge:
-    .quad 0
-    .quad 0
-    ldr x16, left
-    br x16
-left:
-    .quad 0
-    .size OriginBridge, .-OriginBridge
