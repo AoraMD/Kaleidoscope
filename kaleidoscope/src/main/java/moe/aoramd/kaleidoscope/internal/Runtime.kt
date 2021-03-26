@@ -114,7 +114,7 @@ private external fun restoreBridgeNativeInternal(resultPointer: Long)
 
 internal fun invokeBridge32(
     currentThread: Long, mainBox: Long, x3: Long
-): Any = TODO("Not yet implement.")
+): Any? = TODO("Not yet implement.")
 
 internal fun invokeBridge64(
     currentThread: Long, mainBox: Long, x3: Long,
