@@ -47,6 +47,17 @@ sealed class ValidScope(
         if (!source.unmark()) throw RepeatInvokeRestoreException(this)
         result.originPointer.releaseRecord()
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is ValidScope) return false
+        return source == other.source && result == other.result
+    }
+
+    override fun hashCode(): Int {
+        var result = source.hashCode()
+        result = 31 * result + result.hashCode()
+        return result
+    }
 }
 
 class ListenScope internal constructor(
@@ -62,6 +73,19 @@ class ListenScope internal constructor(
         after.invoke(thiz, parameters, store)
         return result
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is ListenScope) return false
+        return before == other.before && after == other.after &&
+                target == other.target && super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = before.hashCode()
+        result = 31 * result + after.hashCode()
+        result = 31 * result + target.hashCode()
+        return result
+    }
 }
 
 class ReplaceScope internal constructor(
@@ -71,5 +95,16 @@ class ReplaceScope internal constructor(
 ) : ValidScope(source, result) {
     override fun invoke(thiz: Any?, parameters: Array<Any?>): Any? {
         return target.invoke(thiz, *parameters)
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other == null || other !is ReplaceScope) return false
+        return target == other.target && super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + target.hashCode()
+        return result
     }
 }
