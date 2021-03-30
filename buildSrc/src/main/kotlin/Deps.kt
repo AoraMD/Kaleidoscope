@@ -40,5 +40,6 @@ object Deps {
 
     object Test {
         const val junit = "junit:junit:4.13.1"
+        const val mockK = "io.mockk:mockk:1.11.0"
     }
 }

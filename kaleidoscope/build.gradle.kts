@@ -64,4 +64,5 @@ dependencies {
     implementation(Deps.Kotlin.standardLibrary)
     implementation(Deps.freeReflection)
     testImplementation(Deps.Test.junit)
+    testImplementation(Deps.Test.mockK)
 }
