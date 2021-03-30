@@ -32,12 +32,14 @@ package moe.aoramd.kaleidoscope.internal
  * The mirror class used to obtain pointer of [mirror::Method]
  * for restricting extension functions type.
  */
-internal inline class RuntimeMethod(val nativePeer: Long)
+internal class RuntimeMethod(val nativePeer: Long)
+//internal inline class RuntimeMethod(val nativePeer: Long)
 
 /**
  * The mirror class used to obtain data of native class [runtime::Box] objects.
  */
-internal inline class Box(private val nativePeer: Long) {
+internal class Box(private val nativePeer: Long) {
+//internal inline class Box(private val nativePeer: Long) {
 
     fun release() = releaseInternal(nativePeer)
 
@@ -69,9 +71,11 @@ internal inline class Box(private val nativePeer: Long) {
         private external fun parameterFromFloatRegister(
             nativePeer: Long, index: Int
         ): Float
+
         private external fun parameterFromDoubleRegister(
             nativePeer: Long, index: Int
         ): Double
+
         private external fun parameterFromStack(
             nativePeer: Long, byteOffset: Int, byteSize: Int
         ): Long
@@ -97,7 +101,8 @@ internal interface InsertBridgeResult {
 /**
  * The mirror class used to obtain data of native class [runtime::ListenResult] objects.
  */
-internal inline class ListenResult(override val nativePeer: Long) : InsertBridgeResult {
+internal class ListenResult(override val nativePeer: Long) : InsertBridgeResult {
+//internal inline class ListenResult(override val nativePeer: Long) : InsertBridgeResult {
 
     val clonePointer: RuntimeMethod
         get() = RuntimeMethod(clonePointerNative(nativePeer))
@@ -111,4 +116,5 @@ internal inline class ListenResult(override val nativePeer: Long) : InsertBridge
 /**
  * The mirror class used to obtain data of native class [runtime::ReplaceResult] objects.
  */
-internal inline class ReplaceResult(override val nativePeer: Long) : InsertBridgeResult
+internal class ReplaceResult(override val nativePeer: Long) : InsertBridgeResult
+//internal inline class ReplaceResult(override val nativePeer: Long) : InsertBridgeResult
