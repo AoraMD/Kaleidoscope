@@ -81,7 +81,8 @@ class ListenScope internal constructor(
     }
 
     override fun hashCode(): Int {
-        var result = before.hashCode()
+        var result = super.hashCode()
+        result = 31 * result + before.hashCode()
         result = 31 * result + after.hashCode()
         result = 31 * result + target.hashCode()
         return result
